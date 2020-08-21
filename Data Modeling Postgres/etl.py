@@ -23,6 +23,7 @@ def process_song_file(cur, filepath: str):
 
 
 def process_log_file(cur, filepath: str):
+    """Process log file and insert the song plays"""
     # open log file
     df = pd.read_json(filepath, lines=True)
 
@@ -73,6 +74,10 @@ ARTIST = {}
 
 
 def process_log_file_copy(cur, filepath: str):
+    """
+    - Process log file that uses copy to insert the song plays
+    - Additionally i added a variable to store the id of the ARTIST to allow not fetch this ID always
+    """
     # open log file
     df = pd.read_json(filepath, lines=True)
 
