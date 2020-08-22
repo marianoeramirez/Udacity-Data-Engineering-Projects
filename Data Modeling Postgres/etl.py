@@ -134,7 +134,7 @@ def process_log_file_copy(cur, filepath: str):
             if results:
                 songid, artistid = results
             else:
-                songid, artistid = "", ""
+                songid, artistid = "null", "null"
             ARTIST[key] = (songid, artistid)
 
         # insert songplay record
@@ -145,7 +145,7 @@ def process_log_file_copy(cur, filepath: str):
         to_insert += "\t".join(songplay_data) + "\n"
 
     cur.copy_from(StringIO(to_insert), 'songplays', columns=(
-        "start_time", "user_id", "level", "song_id", "artist_id", "session_id", "location", "user_agent"))
+        "start_time", "user_id", "level", "song_id", "artist_id", "session_id", "location", "user_agent"), null='null')
 
 
 def process_data(cur, conn, filepath: str, func: Callable[[Any, str], None]):
