@@ -1,15 +1,22 @@
 import os
 import glob
 from io import StringIO
+from typing import Callable, Any
 
 import psycopg2
 import pandas as pd
 from psycopg2.extras import LoggingConnection
-from sql_queries import *
+from .sql_queries import *
 
 
-def process_song_file(cur, filepath: str):
-    # open song file
+def process_song_file(cur, filepath: str) -> None:
+    """
+    Process the song file and insert the artists and the song data
+    :param cur: this is the cursor for the database
+    :param filepath: this the file path to the song file
+    :returns: None
+    """
+
     df = pd.read_json(filepath, lines=True)
 
     # insert song record
@@ -22,8 +29,13 @@ def process_song_file(cur, filepath: str):
     cur.execute(artist_table_insert, artist_data)
 
 
-def process_log_file(cur, filepath: str):
-    """Process log file and insert the song plays"""
+def process_log_file(cur, filepath: str) -> None:
+    """
+    Process log file and insert the song plays and user information
+    :param cur: this is the cursos for the database
+    :param filepath: this the file path to the song file
+    :returns: None
+    """
     # open log file
     df = pd.read_json(filepath, lines=True)
 
@@ -75,8 +87,10 @@ ARTIST = {}
 
 def process_log_file_copy(cur, filepath: str):
     """
-    - Process log file that uses copy to insert the song plays
-    - Additionally i added a variable to store the id of the ARTIST to allow not fetch this ID always
+    Process log file that use COPY to insert the song plays and user information
+    :param cur: this is the cursos for the database
+    :param filepath: this the file path to the song file
+    :returns: None
     """
     # open log file
     df = pd.read_json(filepath, lines=True)
@@ -134,7 +148,15 @@ def process_log_file_copy(cur, filepath: str):
         "start_time", "user_id", "level", "song_id", "artist_id", "session_id", "location", "user_agent"))
 
 
-def process_data(cur, conn, filepath: str, func):
+def process_data(cur, conn, filepath: str, func: Callable[[Any, str], None]):
+    """
+    Get all the files and pass they to the func with the connection to the database
+    :param cur: this is the cursor for the database
+    :param cur: this is the cursor for the database
+    :param filepath: this the file path
+    :param func: this is the function to be execute dwith each file
+    :returns: None
+    """
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
@@ -154,6 +176,9 @@ def process_data(cur, conn, filepath: str, func):
 
 
 def main():
+    """
+    Main function of the applicattion
+    """
     logfile = open('db.log', 'a')
 
     conn = psycopg2.connect(connection_factory=LoggingConnection,
