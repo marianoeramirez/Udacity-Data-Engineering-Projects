@@ -110,8 +110,4 @@ node_modules/
 webpack-stats-local.json
 
 
-docker-compose.development-windows.yml
-run/run_dev_windows.sh
-
-sitehub/media/
-sitehub/tmp/
+dwh.cfg
