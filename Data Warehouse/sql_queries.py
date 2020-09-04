@@ -23,21 +23,21 @@ time_table_drop = "DROP TABLE IF EXISTS time;"
 staging_events_table_create = ("""
 CREATE TABLE "staging_events" (
     "artist" TEXT,
-    "auth" VARCHAR(40) NOT NULL,
+    "auth" VARCHAR(40),
     "firstName" TEXT,
     "gender" CHAR(1),
-    "itemInSession" INTEGER NOT NULL,
+    "itemInSession" INTEGER,
     "lastName" TEXT,
     "length" TEXT,
-    "level" TEXT NOT NULL,
+    "level" TEXT,
     "location" TEXT,
-    "method" TEXT NOT NULL,
-    "page" TEXT NOT NULL,
+    "method" TEXT,
+    "page" TEXT,
     "registration" BIGINT ,
-    "sessionId" INTEGER NOT NULL,
+    "sessionId" INTEGER,
     "song" TEXT,
-    "status" INTEGER NOT NULL,
-    "ts" BIGINT NOT NULL,
+    "status" INTEGER,
+    "ts" BIGINT,
     "userAgent" TEXT,
     "userId" INTEGER
 ); 
@@ -45,16 +45,16 @@ CREATE TABLE "staging_events" (
 
 staging_songs_table_create = ("""
 CREATE TABLE "staging_songs" (
-    "num_songs" INTEGER NOT NULL,
-    "artist_id" VARCHAR(40) NOT NULL,
+    "num_songs" INTEGER,
+    "artist_id" VARCHAR(40),
     "artist_latitude" double precision,
     "artist_longitude" double precision,
     "artist_location" TEXT,
-    "artist_name" TEXT NOT NULL,
-    "song_id" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "duration" float NOT NULL,
-    "year" INTEGER NOT NULL
+    "artist_name" TEXT,
+    "song_id" TEXT,
+    "title" TEXT,
+    "duration" float,
+    "year" INTEGER
 ); 
 """)
 
@@ -74,7 +74,7 @@ CREATE TABLE songplays(
 
 user_table_create = ("""
 CREATE TABLE users(
-    user_id int NOT NULL  PRIMARY KEY, 
+    user_id int PRIMARY KEY, 
     first_name varchar NOT NULL, 
     last_name varchar NOT NULL, 
     gender char(1) NOT NULL, 
@@ -84,7 +84,7 @@ CREATE TABLE users(
 
 song_table_create = ("""
 CREATE TABLE songs(
-    song_id varchar NOT NULL  PRIMARY KEY, 
+    song_id varchar PRIMARY KEY, 
     title varchar NOT NULL, 
     artist_id varchar NOT NULL, 
     year int NOT NULL, 
@@ -94,7 +94,7 @@ CREATE TABLE songs(
 
 artist_table_create = ("""
 CREATE TABLE  artists(
-    artist_id varchar NOT NULL  PRIMARY KEY, 
+    artist_id varchar PRIMARY KEY, 
     name varchar NOT NULL, 
     location varchar, 
     latitude float, 
@@ -104,7 +104,7 @@ CREATE TABLE  artists(
 
 time_table_create = ("""
 CREATE TABLE time(
-    start_time timestamp NOT NULL PRIMARY KEY, 
+    start_time timestamp PRIMARY KEY, 
     hour int NOT NULL, 
     day int NOT NULL, 
     week int NOT NULL, 
@@ -144,31 +144,31 @@ where page = 'NextSong'
 
 user_table_insert = ("""
 INSERT INTO users 
-SELECT userId, firstName, lastName, gender, level  
+SELECT DISTINCT userId, firstName, lastName, gender, level  
 from staging_events where page = 'NextSong' 
 """)
 
 song_table_insert = ("""
 INSERT INTO songs 
-SELECT song_id, title, artist_id, year, duration  from staging_songs 
+SELECT DISTINCT song_id, title, artist_id, year, duration  from staging_songs 
 """)
 
 artist_table_insert = ("""
 INSERT INTO artists 
-SELECT artist_id, artist_name, artist_location, artist_latitude, artist_longitude
+SELECT DISTINCT artist_id, artist_name, artist_location, artist_latitude, artist_longitude
 FROM staging_songs 
 """)
 
 time_table_insert = ("""
 INSERT INTO time 
-SELECT TIMESTAMP 'epoch' + (ts/1000) * INTERVAL '1 second' as start_time, 
+SELECT start_time, 
 EXTRACT(hour from start_time), 
 EXTRACT(day from start_time), 
 EXTRACT(week from start_time), 
 EXTRACT(month from start_time), 
 EXTRACT(year from start_time), 
 EXTRACT(dayofweek from start_time)
-FROM staging_events 
+FROM songplays 
 """)
 
 
