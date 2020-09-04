@@ -28,6 +28,8 @@ Sample Record :
 
 #### Staging Tables
 
+![Image of staging tables](staging.png)
+
 **staging_events** - records from logs dataset
 ```
 artist, auth, firstName, gender, itemInSession, lastName, length, level, location, method, page, registration, sessionId, song, status, ts, userAgent, userId
@@ -38,6 +40,9 @@ num_songs, artist_id, artist_latitude, artist_longitude, artist_location, artist
 ```
 
 #### Fact Table 
+
+![Image of production tables](production.png)
+
 **songplays** - records in log data associated with song plays i.e. records with page `NextSong`
 
 ```
@@ -110,3 +115,4 @@ python etl.py
 [Psycopg](http://initd.org/psycopg/docs/)
 
 [RedShift Documentation](https://docs.aws.amazon.com/redshift/index.html)
+
