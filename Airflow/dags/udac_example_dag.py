@@ -14,11 +14,11 @@ log_json_file = "log_json_path.json"
 
 default_args = {
     'owner': 'udacity',
-    'depends_on_past': False,
-    'start_date': datetime(2019, 1, 12),
+    'depends_on_past': True,
+    'start_date': datetime(2021, 1, 12),
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 3,
+    'retries': 1,
     'retry_delay': timedelta(minutes=5),
     'catchup': True
 }
@@ -29,7 +29,7 @@ dag = DAG('udac_example_dag',
           schedule_interval='0 * * * *'
           )
 
-create_table = CreateTableOperator(task_id="Create_table", conn_id="redshift")
+create_table = CreateTableOperator(task_id="Create_table", dag=dag, conn_id="redshift")
 
 start_operator = DummyOperator(task_id='Begin_execution', dag=dag)
 
@@ -60,6 +60,7 @@ load_songplays_table = LoadFactOperator(
     task_id='Load_songplays_fact_table',
     dag=dag,
     conn_id="redshift",
+    table_name="songplays",
     sql_query=SqlQueries.songplay_table_insert,
 )
 
@@ -87,7 +88,7 @@ load_artist_dimension_table = LoadDimensionOperator(
     conn_id="redshift",
     sql_query=SqlQueries.artist_table_insert,
     empty_table=True,
-    table_name="artist",
+    table_name="artists",
 )
 
 load_time_dimension_table = LoadDimensionOperator(
@@ -101,7 +102,17 @@ load_time_dimension_table = LoadDimensionOperator(
 
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
-    dag=dag
+    dag=dag,
+    conn_id="redshift",
+    tables={
+        "users": 104,
+        "songplays": 6820,
+        "time": 6820,
+        "artists": 10025,
+        "songs": 14896,
+        "staging_events": 8056,
+        "staging_songs": 14896,
+    }
 )
 
 end_operator = DummyOperator(task_id='Stop_execution', dag=dag)
