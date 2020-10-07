@@ -1,3 +1,5 @@
+from typing import Optional
+
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
@@ -9,10 +11,12 @@ class DataQualityOperator(BaseOperator):
     @apply_defaults
     def __init__(self,
                  redshift_conn_id: str = "",
-                 tables: dict = dict,
+                 tables: Optional[dict] = None,
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
+        if tables is None:
+            tables = dict()
         self.redshift_conn_id = redshift_conn_id
         self.tables = tables
 

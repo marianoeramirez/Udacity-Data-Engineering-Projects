@@ -23,7 +23,7 @@ class LoadDimensionOperator(BaseOperator):
         redshift_hook = PostgresHook(postgres_conn_id=self.conn_id)
         if self.empty_table:
             self.log.info(f"Empty table {self.table_name}")
-            redshift_hook.run(f"TRUNCATE {self.table_name}")
+            redshift_hook.run(f"TRUNCATE TABLE {self.table_name};")
 
         self.log.info(f"Running to load the dimension Table {self.table_name}")
         redshift_hook.run(f"INSERT INTO {self.table_name} {self.sql_query}")
