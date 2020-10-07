@@ -5,11 +5,11 @@ from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
                                LoadDimensionOperator, DataQualityOperator, CreateTableOperator)
 from airflow.operators.dummy_operator import DummyOperator
 
-from ..plugins.helpers.sql_queries import SqlQueries
+from helpers import SqlQueries
 
-s3_bucket = 'udacity-dend-warehouse'
+s3_bucket = 'udacity-dend'
 song_s3_key = "song_data"
-log_s3_key = "log-data"
+log_s3_key = "log_data"
 log_json_file = "log_json_path.json"
 
 default_args = {
@@ -106,7 +106,9 @@ run_quality_checks = DataQualityOperator(
 
 end_operator = DummyOperator(task_id='Stop_execution', dag=dag)
 
-start_operator >> create_table >> [stage_events_to_redshift, stage_songs_to_redshift] >> load_songplays_table
+start_operator >> create_table
+
+create_table >> [stage_events_to_redshift, stage_songs_to_redshift] >> load_songplays_table
 
 load_songplays_table >> [load_song_dimension_table, load_artist_dimension_table,
                          load_time_dimension_table, load_user_dimension_table] >> run_quality_checks >> end_operator

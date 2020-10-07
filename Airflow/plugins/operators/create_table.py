@@ -15,7 +15,7 @@ class CreateTableOperator(BaseOperator):
 
     def execute(self, context):
         redshift_hook = PostgresHook(postgres_conn_id=self.conn_id)
-        query = open("create_tables.sql").read()
+        query = open("/home/workspace/airflow/create_tables.sql").read()
 
         redshift_hook.run(query)
         self.log.info(f"Create Table ready!")

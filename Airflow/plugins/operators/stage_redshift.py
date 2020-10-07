@@ -30,7 +30,7 @@ class StageToRedshiftOperator(BaseOperator):
         aws_hook = AwsHook(self.aws_credential_id)
         credentials = aws_hook.get_credentials()
 
-        base_copy_query = " COPY {} FROM '{}' ACCESS_KEY_ID '{}' SECRET_ACCESS_KEY '{}' FORMAT AS json '{}';"
+        base_copy_query = " COPY {} FROM '{}' ACCESS_KEY_ID '{}' SECRET_ACCESS_KEY '{}' region 'us-west-2' FORMAT AS json '{}';"
 
         s3_path = f"s3://{self.s3_bucket}/{self.s3_key}"
 
